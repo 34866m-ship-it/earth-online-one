@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Earth Online | 全球唯一真实开放世界</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #050508;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+#matrix {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -3;
+  opacity: 0.15;
+}
+.grid-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(236, 72, 153, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: -2;
+}
+.scan-line {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+  animation: scan 6s linear infinite;
+  z-index: -1;
+  opacity: 0.7;
+}
+@keyframes scan {
+  0% { top: -10px; }
+  100% { top: 100vh; }
+}
+.cyber-card {
+  background: rgba(17, 17, 28, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 30px rgba(6, 182, 212, 0.15), 0 0 60px rgba(236, 72, 153, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+.cyber-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.08), transparent);
+  animation: light-flow 4s infinite linear;
+}
+.card-scan::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(6, 182, 212, 0.1), transparent);
+  animation: card-scan 3s infinite linear;
+}
+@keyframes light-flow { 0% { left: -100%; } 100% { left: 100%; } }
+@keyframes card-scan { 0% { top: -100%; } 100% { top: 100%; } }
+@keyframes neon-breath {
+  0%,100% { box-shadow: 0 0 5px rgba(6, 182, 212, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(6, 182, 212, 0.8); }
+}
+.glitch {
+  animation: glitch 2s infinite;
+}
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+.cyber-input {
+  background: rgba(26, 27, 41, 0.8);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  transition: all 0.3s ease;
+}
+.cyber-input:focus-within {
+  border-color: #ec4899;
+  animation: neon-breath 1.5s infinite ease-in-out;
+}
+.neon-btn {
+  background: linear-gradient(90deg, #06b6d4, #ec4899);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+  transition: all 0.3s ease;
+  position: relative;
+}
+.neon-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  background: rgba(6, 182, 212, 0.3);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { width: 90%; height: 90%; opacity: 0.7; }
+  100% { width: 120%; height: 120%; opacity: 0; }
+}
+.neon-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(236, 72, 153, 0.6);
+}
+.neon-text {
+  background: linear-gradient(90deg, #06b6d4, #ec4899);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+}
+.play-card {
+  background: rgba(26, 27, 41, 0.6);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.play-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(236, 72, 153, 0.1), transparent);
+  animation: play-flow 3s infinite linear;
+}
+@keyframes play-flow { 0% { left: -100%; } 100% { left: 100%; } }
+.play-card:hover {
+  border-color: rgba(236, 72, 153, 0.4);
+  transform: translateY(-2px);
+}
+.earth-rotate {
+  animation: rotate 10s linear infinite;
+}
+@keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.star {
+  color: #475569;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.star:hover, .star.active {
+  color: #ec4899;
+  text-shadow: 0 0 8px #ec4899;
+}
+
+.achievement-btn {
+  transition: all 0.3s ease;
+}
+.achievement-panel {
+  transition: all 0.3s ease;
+}
+</style>
+</head>
+<body class="flex flex-col items-center justify-center p-4 md:p-8">
+
+<canvas id="matrix"></canvas>
+<div class="grid-bg"></div>
+<div class="scan-line"></div>
+
+<div class="w-full max-w-6xl flex flex-col md:flex-row gap-8 items-center justify-center relative z-10 mb-12">
+  <div class="w-full md:w-1/2 flex flex-col gap-6">
+    <div class="space-y-3 text-center md:text-left">
+      <h1 class="text-[32px] md:text-[40px] font-bold neon-text glitch tracking-wider flex items-center justify-center md:justify-start gap-2">
+        <span class="earth-rotate text-2xl">🌍</span> EARTH ONLINE
+      </h1>
+      <p class="text-cyan-200 text-lg md:text-xl font-light">全球唯一 · 永久在线 · 真实开放世界</p>
+      <p class="text-cyan-200/70 text-sm max-w-md mx-auto md:mx-0">
+        无存档、无回档、80亿玩家同服竞技，这不是游戏<br>
+        这是你独一无二的人生模拟器
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="play-card rounded-xl p-4 text-center">
+        <h3 class="text-cyan-400 font-bold text-sm mb-1">生存养成</h3>
+        <p class="text-cyan-200/60 text-xs">属性升级/职业解锁/人生进阶</p>
+      </div>
+      <div class="play-card rounded-xl p-4 text-center">
+        <h3 class="text-cyan-400 font-bold text-sm mb-1">自由探索</h3>
+        <p class="text-cyan-200/60 text-xs">全球地图/隐藏剧情/趣味支线</p>
+      </div>
+      <div class="play-card rounded-xl p-4 text-center">
+        <h3 class="text-cyan-400 font-bold text-sm mb-1">社交羁绊</h3>
+        <p class="text-cyan-200/60 text-xs">家族公会/灵魂组队/亲密关系</p>
+      </div>
+      <div class="play-card rounded-xl p-4 text-center">
+        <h3 class="text-cyan-400 font-bold text-sm mb-1">全球竞技</h3>
+        <p class="text-cyan-200/60 text-xs">财富排行/成就系统/自定义人生</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cyber-card card-scan w-full max-w-md rounded-2xl p-8 flex flex-col gap-6">
+    <div class="text-center space-y-2">
+      <h2 class="text-[20px] font-bold neon-text tracking-wider">NEURAL LOGIN</h2>
+      <p class="text-xs text-cyan-200/70">神经链接 · 进入你的世界</p>
+    </div>
+
+    <form class="space-y-5">
+      <div class="cyber-input flex items-center rounded-lg px-4 py-3 gap-3">
+        <span class="text-cyan-400 text-lg">𝕬</span>
+        <input type="text" placeholder="输入玩家ID" class="flex-1 outline-none text-sm text-cyan-50 bg-transparent placeholder-cyan-400/60">
+      </div>
+      <div class="cyber-input flex items-center rounded-lg px-4 py-3 gap-3">
+        <span class="text-cyan-400 text-lg">𝕻</span>
+        <input type="password" placeholder="输入神经密钥" class="flex-1 outline-none text-sm text-cyan-50 bg-transparent placeholder-cyan-400/60">
+      </div>
+      <div class="flex justify-between items-center text-xs">
+        <label class="flex items-center gap-2 cursor-pointer text-cyan-300/70">
+          <input type="checkbox" class="w-3.5 h-3.5 rounded bg-transparent border border-cyan-500/50">
+          <span>保存链接</span>
+        </label>
+        <a href="#" class="text-pink-400 hover:text-pink-300 transition-colors">密钥重置？</a>
+      </div>
+      <button type="button" class="neon-btn w-full text-white py-3 rounded-lg text-sm font-medium tracking-wider">
+        链接世界
+      </button>
+      <p class="text-center text-xs text-cyan-200/60">
+        未注册神经ID？<a href="#" class="text-pink-400 hover:underline">立即创建</a>
+      </p>
+    </form>
+  </div>
+</div>
+
+<div class="w-full max-w-6xl relative z-10 mb-12">
+  <div class="cyber-card rounded-2xl p-6 md:p-8">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold neon-text glitch">玩家评价 · 星级评分</h2>
+      <p class="text-cyan-200/70 text-sm mt-2">全球80亿玩家的真实体验</p>
+    </div>
+
+    <div class="flex justify-center gap-3 text-3xl mb-6">
+      <span class="star active">⭐</span>
+      <span class="star active">⭐</span>
+      <span class="star active">⭐</span>
+      <span class="star active">⭐</span>
+      <span class="star active">⭐</span>
+    </div>
+    <p class="text-center text-cyan-200 font-bold text-lg mb-8">4.9 / 5.0 极致好评</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-slate-800/30 p-4 rounded-lg border border-cyan-500/20">
+        <p class="text-cyan-200 text-xs mb-2">「匿名玩家」</p>
+        <p class="text-white text-sm">人生虽然没有攻略，但自由度拉满，这是我玩过最棒的开放世界！</p>
+      </div>
+      <div class="bg-slate-800/30 p-4 rounded-lg border border-cyan-500/20">
+        <p class="text-cyan-200 text-xs mb-2">「探索爱好者」</p>
+        <p class="text-white text-sm">地图无限大，风景全真实，每一次旅行都是全新的隐藏剧情！</p>
+      </div>
+      <div class="bg-slate-800/30 p-4 rounded-lg border border-cyan-500/20">
+        <p class="text-cyan-200 text-xs mb-2">「人生赢家」</p>
+        <p class="text-white text-sm">没有氪金，只有努力，逆风翻盘的成就感碾压所有游戏！</p>
+      </div>
+    <div class="bg-slate-800/30 p-4 rounded-lg border border-cyan-500/20">
+        <p class="text-cyan-200 text-xs mb-2">「匿名玩家」</p>
+        <p class="text-white text-sm">差评，老玩家带不动，新玩家技术更是依托答辩！！再也不玩了！！</p>
+      </div>
+    <div class="bg-slate-800/30 p-4 rounded-lg border border-cyan-500/20">
+        <p class="text-cyan-200 text-xs mb-2">「匿名玩家」</p>
+        <p class="text-white text-sm">666，绝壁有黑幕，评分这么高，把人骗进来杀是吧！</p>
+      </div>
+    <div class="bg-slate-800/30 p-4 rounded-lg border border-cyan-500/20">
+        <p class="text-cyan-200 text-xs mb-2">「匿名玩家」</p>
+        <p class="text-white text-sm">狗策划敢不敢报坐标！！！</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="w-full max-w-6xl relative z-10 mb-8">
+  <div class="cyber-card rounded-2xl p-6 md:p-8">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-bold neon-text glitch">成就殿堂 · 排行榜</h2>
+      <p class="text-cyan-200/70 text-sm mt-2">点击成就查看全球玩家排行榜</p>
+    </div>
+
+    <div class="space-y-3 max-w-3xl mx-auto">
+      <div class="achievement-wrapper">
+        <div class="achievement-btn flex justify-between items-center p-4 rounded-xl cursor-pointer bg-slate-800/40 border border-cyan-500/20 hover:border-pink-400/50 transition-all">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🎓</span>
+            <div>
+              <h3 class="text-cyan-400 font-bold text-sm">学海无涯</h3>
+              <p class="text-cyan-200/50 text-xs">完成学业副本，掌握核心技能</p>
+            </div>
+          </div>
+          <span class="text-pink-400 text-xs toggle-arrow">▼</span>
+        </div>
+        <div class="achievement-panel mt-2 p-4 rounded-lg bg-slate-800/50 border border-cyan-500/20 hidden">
+          <p class="text-cyan-300 text-xs mb-2">全球达成率：37.2%</p>
+          <div class="space-y-2">
+            <div class="flex justify-between text-white text-xs p-2 bg-slate-700/30 rounded">
+              <span>1. 爱因斯坦</span>
+              <span class="text-pink-400">满级学霸</span>
+            </div>
+            <div class="flex justify-between text-white text-xs p-2 bg-slate-700/30 rounded">
+              <span>2. 霍金</span>
+              <span class="text-pink-400">理论大师</span>
+            </div>
+            <div class="flex justify-between text-white text-xs p-2 bg-slate-700/30 rounded">
+              <span>3. 钱学森</span>
+              <span class="text-pink-400">国士无双</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="achievement-wrapper">
+        <div class="achievement-btn flex justify-between items-center p-4 rounded-xl cursor-pointer bg-slate-800/40 border border-cyan-500/20 hover:border-pink-400/50 transition-all">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🌏</span>
+            <div>
+              <h3 class="text-cyan-400 font-bold text-sm">环球旅人</h3>
+              <p class="text-cyan-200/50 text-xs">解锁5个国家以上地图景观</p>
+            </div>
+          </div>
+          <span class="text-pink-400 text-xs toggle-arrow">▼</span>
+        </div>
+        <div class="achievement-panel mt-2 p-4 rounded-lg bg-slate-800/50 border border-cyan-500/20 hidden">
+          <p class="text-cyan-300 text-xs mb-2">全球达成率：12.8%</p>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs p-2 bg-slate-700/30 rounded">
+              <span class="text-white">1. 马可·波罗</span>
+              <span class="text-pink-400">环游世界</span>
+            </div>
+            <div class="flex justify-between text-xs p-2 bg-slate-700/30 rounded">
+              <span class="text-white">2. 玄奘</span>
+              <span class="text-pink-400">西行万里</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="achievement-wrapper">
+        <div class="achievement-btn flex justify-between items-center p-4 rounded-xl cursor-pointer bg-slate-800/40 border border-cyan-500/20 hover:border-pink-400/50 transition-all">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">❤️</span>
+            <div>
+              <h3 class="text-cyan-400 font-bold text-sm">灵魂共鸣</h3>
+              <p class="text-cyan-200/50 text-xs">遇见双向奔赴的亲密关系</p>
+            </div>
+          </div>
+          <span class="text-pink-400 text-xs toggle-arrow">▼</span>
+        </div>
+        <div class="achievement-panel mt-2 p-4 rounded-lg bg-slate-800/50 border border-cyan-500/20 hidden">
+          <p class="text-cyan-300 text-xs mb-2">全球达成率：8.3%</p>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs p-2 bg-slate-700/30 rounded">
+              <span class="text-white">1. 钱钟书 & 杨绛</span>
+              <span class="text-pink-400">灵魂伴侣</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="achievement-wrapper">
+        <div class="achievement-btn flex justify-between items-center p-4 rounded-xl cursor-pointer bg-slate-800/40 border border-cyan-500/20 hover:border-pink-400/50 transition-all">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🏆</span>
+            <div>
+              <h3 class="text-cyan-400 font-bold text-sm">人生巅峰</h3>
+              <p class="text-cyan-200/50 text-xs">实现自己定义的终极目标</p>
+            </div>
+          </div>
+          <span class="text-pink-400 text-xs toggle-arrow">▼</span>
+        </div>
+        <div class="achievement-panel mt-2 p-4 rounded-lg bg-slate-800/50 border border-cyan-500/20 hidden">
+          <p class="text-cyan-300 text-xs mb-2">全球达成率：3.1%</p>
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs p-2 bg-slate-700/30 rounded">
+              <span class="text-white">1. 你（未来）</span>
+              <span class="text-pink-400">自定义赢家</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const code = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+const codeArr = code.split('');
+const fontSize = 12;
+const columns = Math.floor(canvas.width / fontSize);
+const drops = Array(columns).fill(1);
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(5,5,8,0.1)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#06b6d4';
+  ctx.font = `${fontSize}px monospace`;
+  
+  for(let i=0; i<drops.length; i++){
+    const text = codeArr[Math.floor(Math.random()*codeArr.length)];
+    ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+    if(drops[i]*fontSize > canvas.height && Math.random()>0.975){
+      drops[i] = 0;
+    }
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 35);
+window.addEventListener('resize',()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+const stars = document.querySelectorAll('.star');
+stars.forEach(star => {
+  star.addEventListener('click', () => {
+    stars.forEach(s => s.classList.remove('active'));
+    star.classList.add('active');
+    let prev = star;
+    while(prev = prev.previousElementSibling) {
+      prev.classList.add('active');
+    }
+  });
+});
+
+const achievementBtns = document.querySelectorAll('.achievement-btn');
+achievementBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const panel = btn.nextElementSibling;
+    const arrow = btn.querySelector('.toggle-arrow');
+    panel.classList.toggle('hidden');
+    arrow.textContent = panel.classList.contains('hidden') ? '▼' : '▲';
+  });
+});
+</script>
+</body>
+</html>
